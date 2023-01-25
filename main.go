@@ -1,7 +1,9 @@
 package main
 
 import (
+	"log"
 	"net/http"
+	"os"
 
 	//   "github.com/gin-gonic/contrib/static"
 	"github.com/gin-gonic/gin"
@@ -13,8 +15,8 @@ type LOGIN struct {
 }
 
 type FORUMPOST struct {
-	TITLE string  `json:"title"`
-	BODY  string  `json:"body"`
+	TITLE string `json:"title"`
+	BODY  string `json:"body"`
 	OWNER string `json:"owner"`
 }
 
@@ -36,7 +38,13 @@ func main() {
 	api.POST("/login", LoginHandler)
 
 	// Start and run the server
-	router.Run(":3000")
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080"
+	}
+	if err := router.Run(":" + port); err != nil {
+		log.Panicf("error: %s", err)
+	}
 }
 
 func PostsHandler(c *gin.Context) {
