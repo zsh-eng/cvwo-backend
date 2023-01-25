@@ -1,3 +1,4 @@
+-- Taken from https://gist.github.com/mrdaemon/1446020
 -- Users Table
 -- Contains user id, username and password hash
 CREATE TABLE `users` (
@@ -9,7 +10,7 @@ CREATE TABLE `users` (
 
 -- Tags table
 -- Contains tag is, and tag name
-CREATE TABLE `categories` (
+CREATE TABLE `tags` (
   `id` INT NOT NULL AUTO_INCREMENT ,
   `name` VARCHAR(75) NOT NULL ,
   `weight` INT UNSIGNED NOT NULL DEFAULT 1 ,
@@ -61,3 +62,21 @@ CREATE TABLE `posts` (
     ON DELETE NO ACTION
     ON UPDATE NO ACTION
 )
+
+-- Selecting the most recent 10 posts
+WITH recent_posts AS (
+    SELECT *
+    FROM posts p1
+    WHERE 
+        p1.posted_on = 
+        (SELECT MAX(p1.updated_on) 
+        FROM posts p2
+        WHERE p1.posted_on = p2.posted_on);
+    LIMIT 10
+)
+SELECT *
+FROM recent_posts
+LEFT JOIN tags t ON
+    p1.category = t.id
+LEFT JOIN users u ON
+    p1.owner = u.id
